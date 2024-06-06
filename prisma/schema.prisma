@@ -1,0 +1,224 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  seller
+  admin
+}
+
+enum Provider {
+  credential
+}
+
+enum OrderType {
+  ready_stok
+  pre_order
+}
+
+enum ShipStatus {
+  wait
+  process
+  shipping
+  error
+  done
+}
+
+enum Gender {
+  pria
+  wanita
+  unknown
+}
+
+model User {
+  id             String          @id @default(uuid())
+  name           String
+  email          String
+  avatar         String          @default("https://picsum.photos/200/300")
+  role           Role            @default(user)
+  gender         Gender          @default(unknown)
+  password       String?
+  refresh_token  String?         @db.Text
+  provider       Provider        @default(credential)
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @default(now()) @updatedAt
+  last_logged_in DateTime?
+  wallet         Wallet?
+  Store          Store[]
+  category       Category[]
+  wishlist       Wishlist[]
+  cart           Cart[]
+  order          Order[]
+  ResetPassword  ResetPassword[]
+  Address        Address[]
+}
+
+model Wallet {
+  id         String   @id @default(uuid())
+  currency   BigInt
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+}
+
+model Address {
+  id           String  @id @default(uuid())
+  title        String
+  name         String
+  address      String  @db.Text
+  phone_number String
+  note         String  @db.Text
+  Order        Order[]
+  user         User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id      String
+}
+
+model ResetPassword {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    String
+  token      String?
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+}
+
+model Store {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  route       String    @unique
+  avatar      String?   @default("https://picsum.photos/200/300")
+  description String?   @db.Text
+  location    String
+  etalase     Etalase[]
+  created_by  User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     String
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  product     Product[]
+  order       Order[]
+}
+
+model Etalase {
+  id       String    @id @default(uuid())
+  name     String
+  avatar   String?
+  store    Store     @relation(fields: [store_id], references: [id])
+  store_id String
+  Product  Product[]
+}
+
+model ProductImage {
+  id         String  @id @default(uuid())
+  image      String
+  created_at DateTime @default(now())
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id String
+
+  @@index([image])
+}
+
+model Product {
+  id          String    @id @default(uuid())
+  name        String
+  description String?   @db.Text
+  price       BigInt
+  type        OrderType @default(ready_stok)
+  stock       Int
+
+  store    Store  @relation(fields: [store_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  store_id String
+
+  etalase    Etalase @relation(fields: [etalase_id], references: [id])
+  etalase_id String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  image             ProductImage[]
+  wishlist          Wishlist[]
+  cart              Cart[]
+  orderDetail       OrderDetail[]
+  categoryToProduct CategoryToProduct[]
+}
+
+model CategoryToProduct {
+  id          String   @id @default(uuid())
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  product_id  String
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  category_id String
+}
+
+model Category {
+  id                String              @id @default(uuid())
+  name              String              @unique
+  created_by        User                @relation(fields: [user_id], references: [id], onDelete: NoAction)
+  user_id           String
+  created_at        DateTime            @default(now())
+  updated_at        DateTime            @updatedAt
+  categoryToProduct CategoryToProduct[]
+}
+
+model Wishlist {
+  id         String  @id @default(uuid())
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id String
+  created_by User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    String
+}
+
+model Cart {
+  id         String  @id @default(uuid())
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  created_by User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    String
+  product_id String
+  quantity   Int
+}
+
+model Order {
+  id String @id @default(uuid())
+
+  store      Store  @relation(fields: [store_id], references: [id])
+  store_id   String
+  store_name String
+
+  buyer   User   @relation(fields: [user_id], references: [id], onDelete: NoAction)
+  user_id String
+
+  address    Address @relation(fields: [address_id], references: [id])
+  address_id String
+
+  total_quantity Int
+  total_amount   BigInt
+  ship_status    ShipStatus    @default(wait)
+  orderDetail    OrderDetail[]
+}
+
+model OrderDetail {
+  id String @id @default(uuid())
+
+  order    Order  @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order_id String
+
+  product       Product @relation(fields: [product_id], references: [id], onDelete: NoAction)
+  product_id    String
+  product_name  String
+  product_price BigInt
+
+  quantity     Int
+  total_amount BigInt
+}
