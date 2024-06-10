@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
+  AddProductImageDto,
   CreateProductDto,
   FindAllProductDto,
   UpdateProductDto,
@@ -464,5 +465,47 @@ export class ProductService extends BaseResponse {
     });
 
     return this._success('success delete');
+  }
+
+  async addImage(id: string, payload: AddProductImageDto) {
+    const product = await this.prismaService.product.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!product) throw new HttpException('no product found', 404);
+
+    await this.prismaService.productImage.create({
+      data: {
+        image: payload.image,
+        product_id: product.id,
+      },
+    });
+
+    return this._success('success');
+  }
+
+  async deleteProductBulk(data: string[]) {
+    const product = await this.prismaService.product.findMany({
+      where: {
+        id: {
+          in: data,
+        },
+      },
+    });
+
+    if (product.length !== data.length)
+      throw new HttpException('some product are missing', 404);
+
+    await this.prismaService.product.deleteMany({
+      where: {
+        id: {
+          in: data,
+        },
+      },
+    });
+
+    return this._success('delete bulk success');
   }
 }

@@ -152,4 +152,21 @@ export class CartService extends BaseResponse {
 
     return this._success('get total amount', total || 0);
   }
+
+  async deleteCart(id: string) {
+    const cart = await this.prismaService.cart.findFirst({
+      where: {
+        id,
+        user_id: this.req.user.id,
+      },
+    });
+
+    if (!cart) throw new HttpException('no cart found', 404);
+
+    await this.prismaService.cart.delete({
+      where: cart,
+    });
+
+    return this._success('success delete');
+  }
 }

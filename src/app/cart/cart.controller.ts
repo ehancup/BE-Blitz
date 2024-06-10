@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -50,5 +51,12 @@ export class CartController {
   @Post('/get-amount')
   getAmount(@Body() payload: AmountDto) {
     return this.cartService.getTotalAmount(payload);
+  }
+
+  @UseGuards(JwtGuard, RoleGuard)
+  @Roles(['user', 'seller'])
+  @Delete('/delete/:id')
+  deleteCart(@Param('id', ParseUUIDPipe) id: string) {
+    return this.cartService.deleteCart(id);
   }
 }

@@ -14,7 +14,9 @@ import { OwnerGuard } from 'src/guard/owner/owner.guard';
 import { RoleGuard } from 'src/guard/role/role.guard';
 import { Roles } from 'src/guard/role/role.reflector';
 import {
+  AddProductImageDto,
   CreateProductDto,
+  DeleteProductBulkDto,
   FindAllProductDto,
   UpdateProductDto,
 } from './product.dto';
@@ -72,5 +74,21 @@ export class ProductController {
   @Delete('/delete/:id/:productId')
   deleteProduct(@Param('productId', ParseUUIDPipe) productId: string) {
     return this.productService.deleteProduct(productId);
+  }
+  @UseGuards(JwtGuard, RoleGuard, OwnerGuard)
+  @Roles(['seller'])
+  @Put('/add-image/:id/:productId')
+  addImageProduct(
+    @Param('productId', ParseUUIDPipe) productId: string,
+    @Body() payload: AddProductImageDto,
+  ) {
+    return this.productService.addImage(productId, payload);
+  }
+
+  @UseGuards(JwtGuard, RoleGuard, OwnerGuard)
+  @Roles(['seller'])
+  @Put('/delete-bulk/:id')
+  deleteBulk(@Body() payload: DeleteProductBulkDto) {
+    return this.productService.deleteProductBulk(payload.data);
   }
 }

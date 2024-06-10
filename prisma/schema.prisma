@@ -34,6 +34,8 @@ enum ShipStatus {
   shipping
   error
   done
+  cancel_user
+  cancel_seller
 }
 
 enum Gender {
@@ -191,21 +193,25 @@ model Cart {
 
 model Order {
   id String @id @default(uuid())
+  invoice String 
 
-  store      Store  @relation(fields: [store_id], references: [id])
+  store      Store  @relation(fields: [store_id], references: [id], onDelete: NoAction)
   store_id   String
   store_name String
 
   buyer   User   @relation(fields: [user_id], references: [id], onDelete: NoAction)
   user_id String
 
-  address    Address @relation(fields: [address_id], references: [id])
+  address    Address @relation(fields: [address_id], references: [id], onDelete: NoAction)
   address_id String
 
   total_quantity Int
   total_amount   BigInt
   ship_status    ShipStatus    @default(wait)
   orderDetail    OrderDetail[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model OrderDetail {

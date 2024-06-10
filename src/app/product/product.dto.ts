@@ -56,6 +56,8 @@ export class ImageProductDto {
   image: string;
 }
 
+export class AddProductImageDto extends ImageProductDto {}
+
 export class ProductCategory {
   @IsUUID()
   @IsString()
@@ -81,6 +83,12 @@ export class CreateProductDto extends PickType(ProductDto, [
   'category',
   'type',
 ]) {}
+
+export class DeleteProductBulkDto {
+  @IsArray()
+  @IsString({ each: true })
+  data: string[];
+}
 
 export class FindAllProductDto extends PageRequestDto {
   @IsOptional()
