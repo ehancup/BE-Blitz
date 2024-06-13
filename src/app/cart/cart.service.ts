@@ -1,4 +1,4 @@
-import { HttpException, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { PrismaService } from 'src/prisma/prisma.service';
 import BaseResponse from 'src/utils/response/base.response';
@@ -110,6 +110,11 @@ export class CartService extends BaseResponse {
   }
 
   async updateQty(id: string, payload: UpdateQtyDto) {
+    if (payload.quantity < 1)
+      throw new HttpException(
+        'jangan coba coba adik adik',
+        HttpStatus.BAD_REQUEST,
+      );
     const cart = await this.prismaService.cart.findUnique({
       where: {
         id,

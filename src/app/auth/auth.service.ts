@@ -226,11 +226,13 @@ export class AuthService extends BaseResponse {
 
     const token = Math.floor(Math.random() * 1000000).toString();
     const link = `http://localhost:${process.env.PORT}/auth/reset-password/${user.id}/${token}`;
+    const front = `http://localhost:${process.env.FRONT_PORT}/reset-password/${user.id}/${token}`;
 
     await this.mailService.sendForgotPassword({
       email: user.email,
       link: link,
       name: user.name,
+      front: front,
     });
 
     await this.prismaService.resetPassword.create({

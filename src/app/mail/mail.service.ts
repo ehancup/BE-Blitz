@@ -14,6 +14,7 @@ export class MailService {
       context: {
         link: payload.link,
         name: payload.name,
+        front: payload.front,
       },
     });
   }
