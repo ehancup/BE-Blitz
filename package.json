@@ -28,6 +28,8 @@
     "@nestjs/mapped-types": "^2.0.5",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/platform-socket.io": "^10.3.9",
+    "@nestjs/websockets": "^10.3.9",
     "@prisma/client": "^5.11.0",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",

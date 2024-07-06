@@ -15,6 +15,7 @@ import { WalletModule } from './app/wallet/wallet.module';
 import { WishlistModule } from './app/wishlist/wishlist.module';
 import { CartModule } from './app/cart/cart.module';
 import { OrderModule } from './app/order/order.module';
+import { ChatModule } from './app/chat/chat.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { OrderModule } from './app/order/order.module';
     WishlistModule,
     CartModule,
     OrderModule,
+    ChatModule,
   ],
   controllers: [AppController, UploadController],
   providers: [AppService],

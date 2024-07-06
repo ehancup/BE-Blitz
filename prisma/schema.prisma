@@ -13,6 +13,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ChatSender {
+  user
+  seller
+}
+
 enum Role {
   user
   seller
@@ -65,6 +70,7 @@ model User {
   order          Order[]
   ResetPassword  ResetPassword[]
   Address        Address[]
+  ChatRoom       ChatRoom[]
 }
 
 model Wallet {
@@ -98,19 +104,20 @@ model ResetPassword {
 }
 
 model Store {
-  id          String    @id @default(uuid())
-  name        String    @unique
-  route       String    @unique
-  avatar      String?   @default("https://picsum.photos/200/300")
-  description String?   @db.Text
+  id          String     @id @default(uuid())
+  name        String     @unique
+  route       String     @unique
+  avatar      String?    @default("https://picsum.photos/200/300")
+  description String?    @db.Text
   location    String
   etalase     Etalase[]
-  created_by  User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  created_by  User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id     String
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
   product     Product[]
   order       Order[]
+  ChatRoom    ChatRoom[]
 }
 
 model Etalase {
@@ -123,10 +130,10 @@ model Etalase {
 }
 
 model ProductImage {
-  id         String  @id @default(uuid())
+  id         String   @id @default(uuid())
   image      String
   created_at DateTime @default(now())
-  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_id String
 
   @@index([image])
@@ -192,8 +199,8 @@ model Cart {
 }
 
 model Order {
-  id String @id @default(uuid())
-  invoice String 
+  id      String @id @default(uuid())
+  invoice String
 
   store      Store  @relation(fields: [store_id], references: [id], onDelete: NoAction)
   store_id   String
@@ -227,4 +234,27 @@ model OrderDetail {
 
   quantity     Int
   total_amount BigInt
+}
+
+model ChatRoom {
+  id String @id @default(uuid())
+
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String
+
+  store    Store  @relation(fields: [store_id], references: [id])
+  store_id String
+  chats    Chat[]
+}
+
+model Chat {
+  id String @id @default(uuid())
+
+  sender     ChatSender
+  message    String     @db.Text
+  is_read    Boolean    @default(false)
+  created_at DateTime   @default(now())
+
+  room    ChatRoom @relation(fields: [room_id], references: [id])
+  room_id String
 }

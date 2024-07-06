@@ -62,7 +62,7 @@ export class OrderController {
   }
 
   @UseGuards(JwtGuard, RoleGuard)
-  @Roles(['seller'])
+  @Roles(['seller', 'user'])
   @Put('/set-status/:id')
   setStatus(
     @Param('id', ParseUUIDPipe) id: string,
