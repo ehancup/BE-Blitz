@@ -71,6 +71,8 @@ model User {
   ResetPassword  ResetPassword[]
   Address        Address[]
   ChatRoom       ChatRoom[]
+
+  @@map("user")
 }
 
 model Wallet {
@@ -80,6 +82,8 @@ model Wallet {
   user_id    String   @unique
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
+
+  @@map("wallet")
 }
 
 model Address {
@@ -92,6 +96,8 @@ model Address {
   Order        Order[]
   user         User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id      String
+
+  @@map("address")
 }
 
 model ResetPassword {
@@ -101,6 +107,8 @@ model ResetPassword {
   token      String?
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
+
+  @@map("resetpassword")
 }
 
 model Store {
@@ -118,6 +126,8 @@ model Store {
   product     Product[]
   order       Order[]
   ChatRoom    ChatRoom[]
+
+  @@map("store")
 }
 
 model Etalase {
@@ -127,6 +137,8 @@ model Etalase {
   store    Store     @relation(fields: [store_id], references: [id])
   store_id String
   Product  Product[]
+
+  @@map("etalase")
 }
 
 model ProductImage {
@@ -137,6 +149,7 @@ model ProductImage {
   product_id String
 
   @@index([image])
+  @@map("productimage")
 }
 
 model Product {
@@ -161,6 +174,8 @@ model Product {
   cart              Cart[]
   orderDetail       OrderDetail[]
   categoryToProduct CategoryToProduct[]
+
+  @@map("product")
 }
 
 model CategoryToProduct {
@@ -169,6 +184,8 @@ model CategoryToProduct {
   product_id  String
   category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   category_id String
+
+  @@map("categorytoproduct")
 }
 
 model Category {
@@ -179,6 +196,8 @@ model Category {
   created_at        DateTime            @default(now())
   updated_at        DateTime            @updatedAt
   categoryToProduct CategoryToProduct[]
+
+  @@map("category")
 }
 
 model Wishlist {
@@ -187,6 +206,8 @@ model Wishlist {
   product_id String
   created_by User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id    String
+
+  @@map("wishlist")
 }
 
 model Cart {
@@ -196,6 +217,8 @@ model Cart {
   user_id    String
   product_id String
   quantity   Int
+
+  @@map("cart")
 }
 
 model Order {
@@ -219,6 +242,8 @@ model Order {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  @@map("order")
 }
 
 model OrderDetail {
@@ -234,6 +259,8 @@ model OrderDetail {
 
   quantity     Int
   total_amount BigInt
+
+  @@map("orderdetail")
 }
 
 model ChatRoom {
@@ -245,6 +272,8 @@ model ChatRoom {
   store    Store  @relation(fields: [store_id], references: [id])
   store_id String
   chats    Chat[]
+
+  @@map("chatroom")
 }
 
 model Chat {
@@ -257,4 +286,6 @@ model Chat {
 
   room    ChatRoom @relation(fields: [room_id], references: [id])
   room_id String
+
+  @@map("chat")
 }

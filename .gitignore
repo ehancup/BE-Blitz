@@ -13,6 +13,7 @@ yarn-error.log*
 lerna-debug.log*
 
 .env
+ca.pem
 
 # OS
 .DS_Store
