@@ -42,6 +42,7 @@ export class UploadController extends BaseResponse {
       storage: diskStorage({
         destination: './public/uploads',
         filename: (req, file, cb) => {
+          console.log('tersimpan');
           console.log('file => ', file);
           cb(
             null,

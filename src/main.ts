@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { Logger } from '@nestjs/common';
 import * as path from 'path';
 
 async function bootstrap() {
@@ -14,7 +15,7 @@ async function bootstrap() {
   app.useStaticAssets(path.join(__dirname, '..', 'public'));
   app.enableCors();
   await app.listen(process.env.PORT, () =>
-    console.log(`server run on port ${process.env.PORT}`),
+    Logger.debug(`server run on port ${process.env.PORT}`, 'Running'),
   );
 }
 bootstrap();
